@@ -63,6 +63,48 @@ public class InvertNegsMutatorTest extends MutatorTestBase {
     assertMutantCallableReturns(new HasINeg(), mutant, "1");
   }
 
+  private static class HasINegOnLocalVariable implements Callable<String> {
+    public int containsINeg() {
+      int i = 1;
+      return -i;
+    }
+
+    @Override
+    public String call() throws Exception {
+      return "" + containsINeg();
+    }
+
+  }
+
+  @Test
+  public void shouldInvertINegsOnLocalVariable() throws Exception {
+    final Collection<MutationDetails> actual = findMutationsFor(HasINegOnLocalVariable.class);
+    assertEquals(1, actual.size());
+    final Mutant mutant = getFirstMutant(actual);
+    assertMutantCallableReturns(new HasINegOnLocalVariable(), mutant, "1");
+  }
+
+  private static class HasINegOnFinalLocalVariable implements Callable<String> {
+    public int containsINeg() {
+      final int i = 1;
+      return -i;
+    }
+
+    @Override
+    public String call() throws Exception {
+      return "" + containsINeg();
+    }
+
+  }
+
+  @Test
+  public void shouldInvertINegsOnFinalLocalVariable() throws Exception {
+    final Collection<MutationDetails> actual = findMutationsFor(HasINegOnFinalLocalVariable.class);
+    assertEquals(1, actual.size());
+    final Mutant mutant = getFirstMutant(actual);
+    assertMutantCallableReturns(new HasINegOnFinalLocalVariable(), mutant, "1");
+  }
+  
   private static class HasFNeg implements Callable<String> {
     public float containsFNeg(final float i) {
       return -i;
